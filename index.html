@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Flight Price Checker</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        max-width: 600px;
+        margin: 0 auto;
+        padding: 20px;
+        background-color: #f4f4f9;
+      }
+      header {
+        text-align: center;
+        margin-bottom: 20px;
+      }
+      h1 {
+        color: #333;
+      }
+      form {
+        display: flex;
+        flex-direction: column;
+        gap: 15px;
+      }
+      .form-group {
+        display: flex;
+        flex-direction: column;
+      }
+      label {
+        font-weight: bold;
+        margin-bottom: 5px;
+      }
+      select,
+      input[type="date"],
+      button {
+        padding: 10px;
+        font-size: 16px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+      }
+      button {
+        background-color: #007bff;
+        color: white;
+        border: none;
+        cursor: pointer;
+        transition: background-color 0.3s;
+      }
+      button:hover {
+        background-color: #0056b3;
+      }
+      button:disabled {
+        background-color: #6c757d;
+        cursor: not-allowed;
+      }
+      #result {
+        margin-top: 20px;
+        font-size: 18px;
+        color: #333;
+      }
+      @media (max-width: 400px) {
+        body {
+          padding: 10px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <h1>✈️ Flight Price Tracker</h1>
+    </header>
+    <main>
+      <form id="flight-form" aria-label="Flight price search form">
+        <div class="form-group">
+          <label for="from">From:</label>
+          <select id="from" name="from" required>
+            <option value="" disabled selected>Select a city</option>
+            <option value="DEL">Delhi</option>
+            <option value="BOM">Mumbai</option>
+            <option value="BLR">Bangalore</option>
+            <option value="HYD">Hyderabad</option>
+            <option value="MAA">Chennai</option>
+            <option value="CCU">Kolkata</option>
+            <option value="AMD">Ahmedabad</option>
+            <option value="PNQ">Pune</option>
+            <option value="JAI">Jaipur</option>
+            <option value="GOI">Goa</option>
+            <option value="LKO">Lucknow</option>
+            <option value="PAT">Patna</option>
+            <option value="IXC">Chandigarh</option>
+            <option value="BHO">Bhopal</option>
+            <option value="IDR">Indore</option>
+            <option value="BBI">Bhubaneswar</option>
+            <option value="GAU">Guwahati</option>
+            <option value="SXR">Srinagar</option>
+            <option value="DED">Dehradun</option>
+            <option value="IXR">Ranchi</option>
+            <option value="VNS">Varanasi</option>
+            <option value="NAG">Nagpur</option>
+            <option value="CJB">Coimbatore</option>
+            <option value="VTZ">Vishakhapatnam</option>
+            <option value="ATQ">Amritsar</option>
+            <option value="TRV">Trivandrum</option>
+            <option value="IXE">Mangalore</option>
+            <option value="RPR">Raipur</option>
+            <option value="STV">Surat</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="to">To:</label>
+          <select id="to" name="to" required>
+            <option value="" disabled selected>Select a city</option>
+            <option value="DEL">Delhi</option>
+            <option value="BOM">Mumbai</option>
+            <option value="BLR">Bangalore</option>
+            <option value="HYD">Hyderabad</option>
+            <option value="MAA">Chennai</option>
+            <option value="CCU">Kolkata</option>
+            <option value="AMD">Ahmedabad</option>
+            <option value="PNQ">Pune</option>
+            <option value="JAI">Jaipur</option>
+            <option value="GOI">Goa</option>
+            <option value="LKO">Lucknow</option>
+            <option value="PAT">Patna</option>
+            <option value="IXC">Chandigarh</option>
+            <option value="BHO">Bhopal</option>
+            <option value="IDR">Indore</option>
+            <option value="BBI">Bhubaneswar</option>
+            <option value="GAU">Guwahati</option>
+            <option value="SXR">Srinagar</option>
+            <option value="DED">Dehradun</option>
+            <option value="IXR">Ranchi</option>
+            <option value="VNS">Varanasi</option>
+            <option value="NAG">Nagpur</option>
+            <option value="CJB">Coimbatore</option>
+            <option value="VTZ">Vishakhapatnam</option>
+            <option value="ATQ">Amritsar</option>
+            <option value="TRV">Trivandrum</option>
+            <option value="IXE">Mangalore</option>
+            <option value="RPR">Raipur</option>
+            <option value="STV">Surat</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="date">Date:</label>
+          <input
+            type="date"
+            id="date"
+            name="date"
+            required
+            min="2025-04-24"
+            value="2025-05-01"
+          />
+        </div>
+
+        <button type="submit" id="search-btn">Get Lowest Price</button>
+      </form>
+
+      <p id="result" aria-live="polite"></p>
+    </main>
+
+    <script>
+      const form = document.getElementById("flight-form");
+      const result = document.getElementById("result");
+      const button = document.getElementById("search-btn");
+
+      const today = new Date().toISOString().split("T")[0];
+      document.getElementById("date").setAttribute("min", today);
+
+      const fromSelect = document.getElementById("from");
+      const toSelect = document.getElementById("to");
+      fromSelect.addEventListener("change", () => {
+        toSelect.querySelectorAll("option").forEach((option) => {
+          option.disabled =
+            option.value === fromSelect.value && option.value !== "";
+        });
+      });
+
+      form.addEventListener("submit", async (event) => {
+        event.preventDefault();
+        result.textContent = "🔄 Fetching price...";
+        button.disabled = true;
+        button.textContent = "Searching...";
+
+        const from = fromSelect.value;
+        const to = toSelect.value;
+        const date = document.getElementById("date").value;
+
+        try {
+          const response = await fetch(
+            `http://localhost:3001/api/price?from=${encodeURIComponent(
+              from
+            )}&to=${encodeURIComponent(to)}&date=${encodeURIComponent(date)}`
+          );
+
+          if (!response.ok) {
+            throw new Error(`HTTP error! Status: ${response.status}`);
+          }
+
+          const data = await response.json();
+
+          if (data.price) {
+            result.innerHTML = `
+  <div style="
+    border: 1px solid #ccc;
+    border-radius: 10px;
+    padding: 20px;
+    background: #fff;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  ">
+    <p><strong>Airline:</strong> ${data.airline}</p>
+    <p><strong>Time:</strong> ${data.time}</p>
+    <p><strong>Price:</strong> ₹${data.price}</p>
+    <button class="inline-flex justify-center items-center bg-brand-solid text-brand-solid hover:bg-brand-solid-over gap-5px rounded-10 min-h-40 button-md icon-md px-15px w-200" onclick="window.open('https://www.ixigo.com/search/result/flight?from=${from}&to=${to}&date=${date
+              .split("-")
+              .reverse()
+              .join(
+                ""
+              )}&adults=1&children=0&infants=0&class=e&source=Search+Form&hbs=true&sort_type=cheapest', '_blank')">Book</button>
+
+    <a
+  href="https://www.google.com/travel/flights?q=flights+from+${from}+to+${to}+on+${date}"
+  target="_blank">
+  <button
+    aria-label="Price history graph"
+    class="inline-flex justify-center items-center bg-gray-700 text-white hover:bg-gray-800 gap-5px rounded-10 min-h-40 button-md icon-md px-15px w-200"
+    style="margin-top:10px">
+    View Price History Graph
+  </button>
+</a>
+          
+  </div>
+`;
+          } else {
+            result.textContent = `⚠️ ${data.error || "No flight data found"}`;
+          }
+        } catch (error) {
+          console.error("Fetch error:", error);
+          result.textContent = `❌ ${error.message || "Failed to fetch price"}`;
+        } finally {
+          button.disabled = false;
+          button.textContent = "Get Lowest Price";
+        }
+      });
+    </script>
+  </body>
+</html>
